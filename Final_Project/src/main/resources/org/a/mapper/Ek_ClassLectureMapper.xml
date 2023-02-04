@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper 
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+
+<mapper namespace="org.a.mapper.Ek_ClassLectureMapper">
+	
+	
+	<!--게스트가 선택 가능한 클래스 리스트 화면 뽑기 -->
+	<select id="getList" resultType="org.a.domain.Ek_ClassLectureVO">
+		<![CDATA[
+			SELECT * FROM classLecture WHERE cno > 0
+		]]>
+	</select>
+
+	<!-- 호스트가 마이페이지에서 본인이 생성한 클래스 확인용 화면 -->
+	<select id="MList" resultType="org.a.domain.Ek_ClassLectureVO">
+		select *from classLecture where user_ID = #{user_ID}
+	</select>
+	
+	<select id="classGet" resultType="org.a.domain.Ek_ClassLectureVO">
+		SELECT * FROM classLecture WHERE cno=#{cno}
+	</select>
+	
+	
+	
+	<insert id="insert_class" >
+		INSERT INTO classLecture(cno, class_name, class_type, class_intro, class_detail, class_runtime, class_price, tutor_intro, tutor_nickname, keyword, class_loc, class_loc_detail, class_start, class_end, class_tel) 
+		VALUES(
+			class_seq.nextval,  #{class_name}, #{class_type}, #{class_intro},#{class_detail},#{class_runtime},#{class_price},#{tutor_intro},#{tutor_nickname},#{keyword},#{class_loc},#{class_loc_detail},#{class_start},#{class_end},#{class_tel}
+			)
+	</insert>
+	
+	<select id="getCno" resultType="long">
+		<!-- select max(bno) from tbl_board -->
+		<![CDATA[
+		select cno from (select cno from classLecture order by cno desc) where rownum=1
+		]]>
+		
+	</select>
+	
+	
+</mapper>

@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper 
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+
+<mapper namespace="org.a.mapper.HA_ProductMapper">
+	<!-- 파라미터 타입은 필요없음 -->
+	<!-- 아래 전체 목록 가져오기(페이징 처리)있기 때문에 이 코드 사용 안 해도 됨  -->
+	<!-- 01. 상품 전체 목록 -->
+<!-- 	
+	<select id="getList" resultType="org.a.domain.ProductVO">
+		<![CDATA[
+			select * from tbl_product_list where product_id > 0
+		]]>
+	</select>
+	 -->
+ 	<select id="getList" resultType="org.a.domain.HA_ProductVO">
+		<![CDATA[
+			SELECT * FROM tbl_product_list 
+			ORDER BY product_id
+		]]>
+	</select>
+	 
+	 <!-- 02. 상품 상세보기 -->
+	<!-- id와 select의 resultType은 필수로 적어야 함, 생략 불가 / parameterType은 생략 가능 -->
+	<select id="read" resultType="org.a.domain.HA_ProductVO">
+		SELECT * FROM tbl_product_list 
+		WHERE product_id=#{product_id}
+	</select>
+	
+	
+	
+	<select id="getProduct_id" resultType="int">
+		SELECT max(product_id) FROM tbl_product_list
+	</select>
+
+</mapper>

@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+
+<mapper namespace="org.a.mapper.HS_CareMapper">
+	
+	 <!-- 후기 리스트 페이징 -->
+	<select id="getListWithPaging" resultType="org.a.domain.HS_PstReplyVO">
+		<![CDATA[
+		select rn, PST_REPLYNUM, RE_CONTENT, user_ID, PET_NAME 
+		from
+			(select /*+index_desc(pst_reply SYS_C007822) */  
+			ROWNUM rn, PST_REPLYNUM, RE_CONTENT, user_ID, PET_NAME 
+			from pst_reply
+			where ROWNUM <= #{pageNum} *#{amount})
+		where rn > (#{pageNum}-1) * #{amount}
+		]]> 
+	</select>
+	
+	 <!-- 후기 리스트 출력 -->
+	<select id="outputReply" resultType="org.a.dto.HS_RequestDTO">
+		select re.RE_CONTENT, bk.user_ID, pet.PET_NAME,pet.PET_NUM, bk.START_DATE, bk.END_DATE,re.PST_REPLYNUM,re.RE_DATE,pst.PST_NAME 
+		from PST_REPLY re
+		left join BOOKING bk
+		on re.BK_NO = bk.BK_NO
+		left join PET pet 
+		on re.PET_NUM = pet.PET_NUM
+		left join PETSITTER pst
+		on re.PST_NO = pst.PST_NO
+	</select>
+	
+	 <!-- 돌봄 후기 상세보기 출력 -->
+	<select id="replyView" resultType="org.a.dto.HS_RequestDTO" parameterType="int">
+		select re.RE_CONTENT, bk.user_ID, pet.PET_NAME,pet.PET_NUM, bk.START_DATE, bk.END_DATE,re.PST_REPLYNUM,pst.PST_NAME 
+		from PST_REPLY re
+		left join BOOKING bk
+		on re.BK_NO = bk.BK_NO
+		left join PET pet 
+		on re.PET_NUM = pet.PET_NUM
+		left join PETSITTER pst
+		on re.PST_NO = pst.PST_NO
+		where pst_replynum = #{pst_replynum}
+	</select>
+	
+	 <!-- 후기 등록 -->
+	<insert id="inputReply" parameterType="org.a.domain.HS_PstReplyVO">
+		insert into pst_reply(PST_REPLYNUM,RE_CONTENT,START_DATE,END_DATE,user_ID,PET_NUM,RE_DATE,PST_NO) 
+		values(reply_seq.nextval, 
+		#{RE_CONTENT}, 
+		#{START_DATE}, 
+		#{END_DATE}, 
+		#{user_ID},
+		#{PET_num},
+		sysdate,
+		#{PST_NO}
+		)
+	</insert> 
+	
+	<!-- 후기 수정 -->
+	<update id="updateReply" parameterType="org.a.domain.HS_PstReplyVO">
+		update pst_reply set 
+		RE_CONTENT = #{RE_CONTENT}
+		where PST_REPLYNUM = #{PST_REPLYNUM} 
+	</update>
+	
+	<!-- 후기 삭제 -->
+	<delete id="deleteReply" parameterType="org.a.domain.HS_PstReplyVO">
+		delete from pst_reply where PST_REPLYNUM = #{PST_REPLYNUM} 
+	</delete>
+	
+	
+	 <!-- 돌봄서비스 등록 -->
+	<insert id="inputBooking" parameterType="org.a.domain.HS_BookingVO">
+		insert into booking (BK_NO,START_DATE,END_DATE,BK_TIME,BK_ADDR1,BK_ADDR2,BK_CONTENT,BK_DATE)
+		values(bk_seq.nextval, 
+		#{START_DATE}, 
+		#{END_DATE}, 
+		#{BK_TIME}, 
+		#{BK_ADDR1},
+		#{BK_ADDR2},
+		#{BK_CONTENT},
+		sysdate
+		)
+	</insert> 
+	
+	 <!-- 펫시터 등록 -->
+	<insert id="insertPst" parameterType="org.a.domain.HS_PetsitterVO">
+		insert into petsitter (PST_NO,PST_NAME,PST_MYSELF,PST_LICENSE,PST_ADDR)
+		values(pst_seq.nextval,
+		#{PST_NAME}, 
+		#{PST_MYSELF}, 
+		#{PST_LICENSE}, 
+		#{PST_ADDR}
+		)
+	</insert> 
+	 <!-- 펫시터 리스트 출력 -->
+	<select id="outputPst" resultType="org.a.domain.HS_PetsitterVO">
+		select * from petsitter 
+	</select>
+	 <!-- 돌봄 후기 상세보기 출력 -->
+	<select id="viewPst" resultType="org.a.domain.HS_PetsitterVO" parameterType="int">
+		select * from petsitter 
+		where PST_NO = #{PST_NO}
+	</select>
+	<!-- 펫시터 수정 -->
+	<update id="updatePst" parameterType="org.a.domain.HS_PetsitterVO">
+		update petsitter set 
+		PST_MYSELF = #{PST_MYSELF},
+		PST_LICENSE = #{PST_LICENSE}, 
+		PST_ADDR = #{PST_ADDR}
+		where PST_NO = #{PST_NO} 
+	</update>
+	
+	<!-- 펫시터 삭제 -->
+	<delete id="deletePst" parameterType="org.a.domain.HS_PetsitterVO">
+		delete from petsitter where PST_NO = #{PST_NO} 
+	</delete>
+	
+</mapper>

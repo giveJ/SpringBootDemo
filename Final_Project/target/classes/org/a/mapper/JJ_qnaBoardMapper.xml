@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper 
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+
+
+<mapper namespace="org.a.mapper.JJ_qnaBoardMapper">
+	
+	
+	<select id="getList" resultType="org.a.domain.JJ_qnaBoardVO">
+		<![CDATA[
+			select*from qna_board order by bno desc
+		]]>
+	</select>
+	
+	<insert id="insert" parameterType="org.a.domain.JJ_qnaBoardVO">
+		<![CDATA[
+			insert into qna_board (bno, title, content, writer, regdate, category, secret) values
+			(qna_board_seq.nextval, #{title}, #{content}, #{writer},
+			sysdate, #{category}, #{secret})
+		]]>	
+	</insert>
+	
+	<select id="read" resultType="org.a.domain.JJ_qnaBoardVO">
+		<![CDATA[
+			select*from qna_board where bno=#{bno}
+		]]>
+	
+	</select>
+	
+	 <update id="update">
+		<![CDATA[
+			update qna_board set 
+			title=#{title}, content=#{content}, writer=#{writer},
+			category=#{category}, secret=#{secret}
+			where bno=#{bno}
+		]]>
+	</update>
+	
+	<delete id="delete">
+		<![CDATA[
+			delete from qna_board where bno=#{bno}
+		]]>
+	
+	</delete>
+	
+	
+	<select id="getListWithPaging" resultType="org.a.domain.JJ_qnaBoardVO">
+		<![CDATA[
+			select bno, title, content, writer, regdate, category, secret, replyCnt
+			from 
+				(select /*+index_desc(qna_board pk_board)*/
+				rownum rn, bno, title, content, writer, regdate, category, secret, replyCnt
+				from qna_board
+				where rownum <= #{pageNum} * #{amount} and category=#{category})
+			where rn > (#{pageNum} - 1) * #{amount} order by bno desc
+		]]>
+	</select>
+	
+	
+	<select id="getTotalCount" resultType="int">
+		select count(*) from qna_board
+	</select>
+	
+	<update id="updateReplyCnt">
+		update qna_board set replycnt = replycnt + #{amount}
+		where bno=#{bno}
+	</update>
+
+
+</mapper>

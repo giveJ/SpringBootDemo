@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper 
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+
+<mapper namespace="org.a.mapper.aMapper">
+	
+
+	<!-- 1. 회원가입 -->
+
+	<insert id="register">
+		INSERT INTO smilepaws_user VALUES(#{user_ID},#{user_PW},#{user_NAME},#{user_EMAIL},
+			#{user_TEL},#{user_ADDR},sysdate,#{user_age}, 0 , #{bk_no}, #{pet_num})
+	</insert>
+
+
+	<!-- 2. 로그인 -->
+
+	<select id="login" resultType="org.a.domain.aVO">
+		SELECT * FROM smilepaws_user WHERE user_id = #{user_ID} AND user_pw = #{user_PW}
+	</select>
+
+
+	<!-- 3. 회원정보 수정 -->
+	<update id="memberUpdate">
+		UPDATE smilepaws_user SET 
+		user_pw = #{user_PW},
+		user_name = #{user_NAME},
+		user_email = #{user_EMAIL},
+		user_tel = #{user_TEL},
+		user_addr = #{user_ADDR},
+		user_age = #{user_age}
+		WHERE user_id = #{user_ID}
+	</update>
+
+
+	<!-- 4. 회원탈퇴 -->
+	<delete id="memberDelete">
+		DELETE FROM smilepaws_user
+			WHERE user_id = #{user_ID}
+		 		 AND user_pw = #{user_PW} 
+	</delete>
+	
+	
+	<!-- 5. 회원탈퇴 비밀번호 확인 -->
+	<select id="passChk" resultType="int">
+		SELECT COUNT(*) FROM smilepaws_user
+		WHERE user_id = #{user_ID}
+		  AND user_pw = #{user_PW} 
+	</select>
+
+
+	<!-- 6. 아이디 중복 체크 -->
+	<select id="idCheck" resultType="int">
+		SELECT count(*) FROM smilepaws_user
+			WHERE user_id = #{user_ID}
+	</select>
+	
+</mapper>

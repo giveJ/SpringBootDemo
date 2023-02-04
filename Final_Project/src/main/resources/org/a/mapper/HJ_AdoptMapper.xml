@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper 
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+
+<mapper namespace="org.a.mapper.HJ_AdoptMapper">
+	
+	<select id="getList" resultType="org.a.domain.HJ_AdoptVO">
+		<![CDATA[	
+		select * from adopt where ano > 0
+		]]>
+	</select>
+	
+	<insert id="insert">
+		insert into adopt(ano, a_name, a_age, a_job, a_phone, a_member, a_addr, a_pet)
+		values(seq_adopt.nextval, #{a_name}, #{a_age}, #{a_job}, #{a_phone}, #{a_member}, #{a_addr}, #{a_pet})
+	</insert>	
+	
+	
+	
+</mapper>

@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper 
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+
+<mapper namespace="org.a.mapper.HJ_FamilyMapper">
+	
+	<sql id="criteria">
+			<trim prefix="(" suffix=") AND " prefixOverrides="OR">
+				<choose>
+				<when test="type == 'A'.toString()">
+					variety like '%'||#{keyword}||'%' or f_title like '%'||#{keyword}||'%'
+				</when>
+				<when test="type == 'V'.toString()">
+					variety like '%'||#{keyword}||'%'
+				</when>
+				<when test="type == 'T'.toString()">
+					f_title like '%'||#{keyword}||'%'
+				</when>
+			</choose>
+		</trim>
+		</sql>	
+	
+	<!-- <select id="getList" resultType="org.a.domain.HJ_FamilyVO">
+		<![CDATA[	
+		select * from family where fno > 0
+		]]>
+	</select> -->
+	
+	<insert id="insert">
+		insert into family(fno, variety, f_title, f_date, f_age, f_gender, f_weight, f_color, f_place, f_special, f_check,familyImg,f_Img)
+		values(seq_family.nextval, #{variety}, #{f_title}, sysdate, #{f_age},#{f_gender},#{f_weight},#{f_color},#{f_place},#{f_special},#{f_check},#{familyImg},#{f_Img})
+	</insert>
+	
+	<select id="getListWithPaging" resultType="org.a.domain.HJ_FamilyVO">
+		<![CDATA[	
+			select rn, fno, variety, f_title, f_date, f_age,f_gender, f_weight, f_color, f_place, f_special, f_check, familyImg, f_Img
+			from
+				(select rownum rn, fno, variety, f_title, f_date, f_age, f_gender, f_weight, f_color, f_place, f_special, f_check, familyImg, f_Img
+				from family where ]]>
+			
+			<trim prefix="(" suffix=") AND " prefixOverrides="OR">
+				<choose>
+				<when test="type == 'A'.toString()">
+					variety like '%'||#{keyword}||'%' or f_title like '%'||#{keyword}||'%'
+				</when>
+				<when test="type == 'V'.toString()">
+					variety like '%'||#{keyword}||'%'
+				</when>
+				<when test="type == 'T'.toString()">
+					f_title like '%'||#{keyword}||'%'
+				</when>
+			</choose>
+		</trim>
+			<![CDATA[	
+				rownum <= #{pageNum} * #{amount} order by fno desc) 
+			where rn > (#{pageNum} - 1) * #{amount}
+		]]>
+	</select>
+	
+	<select id="getTotalCount" resultType="int">
+		select count(*) from family where 
+		<include refid="criteria"></include>
+		<![CDATA[
+		fno > 0
+	]]>
+	</select>
+	
+	<select id="read" resultType="org.a.domain.HJ_FamilyVO">
+		select * from family where fno = #{fno}
+	</select>
+	
+	<update id="update">
+		update family set variety= #{variety}, f_title = #{f_title}, f_age = #{f_age}, f_gender = #{f_gender}, f_weight = #{f_weight},
+		 f_color = #{f_color}, f_place = #{f_place}, f_special = #{f_special}, f_check = #{f_check}, familyImg = #{familyImg}, f_Img = #{f_Img} where fno = #{fno}
+	</update>
+	
+	<delete id="delete">
+		delete from family where fno = #{fno}
+	</delete>
+	
+	
+	
+	
+</mapper>

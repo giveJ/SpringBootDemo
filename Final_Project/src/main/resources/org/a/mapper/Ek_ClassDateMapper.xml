@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper 
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="org.a.mapper.Ek_ClassDateMapper">
+
+	
+	<insert id="insertDate" >
+		INSERT INTO classDate VALUES(
+			 date_seq.nextval, #{cno}, #{s_date_unit}, #{p_time_start_unit},#{p_time_end_unit},#{class_max}
+		)
+	</insert>
+	
+	<select id="selectDate" resultType="org.a.domain.Ek_ClassDateVO">
+		select p_time_start, p_time_end, class_max from classDate where s_date=#{s_date} 
+	</select>
+	
+</mapper>

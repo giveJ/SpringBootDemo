@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper 
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="org.a.mapper.Ek_ClassImageMapper">
+	<insert id="insert">
+		INSERT INTO classImage(uuid, cno,uploadPath, fileName, fileType) VALUES(#{uuid}, #{cno}, #{uploadPath}, #{fileName}, #{fileType})	
+	</insert>
+
+
+	<delete id="delete">
+		DELETE FROM classImage WHERE uuid=#{uuid}	
+	</delete>
+	
+	<select id="findByCno" resultType="org.a.domain.Ek_ClassImageVO">
+		SELECT * FROM classImage  WHERE cno=#{cno}
+	</select>
+	
+	<resultMap type="org.a.domain.Ek_ClassImageVO" id="imgMap">
+		<result property="fileName" column="fileName"/>
+		<result property="fieType" column="fieType"/>
+		<result property="uploadPath" column="uploadPath"/>
+		<result property="cno" column="cno"/>
+		<result property="uuid" column="uuid"/>
+	</resultMap>
+	
+	<resultMap type="org.a.domain.Ek_ClassLectureVO" id="lecMap">
+		<result property="user_ID" column="user_ID"/>
+		<result property="class_type" column="class_type"/>
+		<result property="class_intro" column="class_intro"/>
+		<result property="class_detail" column="class_detail"/>
+		<result property="class_runtime" column="class_runtime"/>
+		<result property="class_price" column="class_price"/>
+		<result property="tutor_intro" column="tutor_intro"/>
+		<result property="tutor_nickname" column="tutor_nickname"/>
+		<result property="keyword" column="keyword"/>
+		<result property=" class_loc" column=" class_loc"/>
+		<result property="class_loc_detail" column="class_loc_detail"/>
+		<result property="class_start" column="class_start"/>
+		<result property="class_end" column="class_end"/>
+		<result property="class_tel" column="class_tel"/>
+		<collection property="classImageList" column="classImageList"></collection>
+	</resultMap>
+	
+	
+	
+	<select id="fileType" resultMap="imgMap">
+		SELECT cl.cno, user_id, class_name, class_type, class_intro, class_detail, ci.filename, ci.fileType
+		FROM classlecture cl LEFT JOIN classImage ci
+		ON cl.cno = ci.cno
+		WHERE ci.filetype=#{fileType}
+
+	</select>
+	
+</mapper>

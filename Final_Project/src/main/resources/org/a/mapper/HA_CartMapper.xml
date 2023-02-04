@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper 
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+
+<mapper namespace="org.a.mapper.HA_CartMapper">
+	<!-- 1. 장바구니 추가 -->	<!-- 임시로 멤버 계정 만들어줌, 로그인 만들어지면 쿼리문 수정하기('asdf2' -> #{user_ID}) -->
+	<insert id="insert">
+		INSERT INTO tbl_cart(
+			cart_id, user_ID, product_id, amount
+		) VALUES (
+			tbl_cart_seq.NEXTVAL, 'asdf2', #{product_id}, #{amount}
+		)
+	</insert>
+
+	<!-- 2. 장바구니 목록(쿼리 오류 해결) -->
+	<select id="listCart" resultType="org.a.domain.HA_CartVO">
+		SELECT
+			user_NAME,
+		    product_name,
+		    product_price,
+		    amount,
+		    (product_price * amount) money,
+		    cart_id,
+		    c.product_id,
+		    product_url
+		FROM
+			smilepaws_user m, tbl_product_list p, tbl_cart c
+		WHERE m.user_ID = c.user_ID
+			AND p.product_id = c.product_id
+			AND c.user_ID = #{user_ID}
+		ORDER BY
+			c.cart_id
+	</select>
+	
+	<!-- 3. 장바구니 전체 금액 -->
+	<select id="sumMoney" resultType="int">
+		SELECT NVL(SUM(product_price * amount), 0) money
+		FROM tbl_cart c, tbl_product_list p
+		WHERE c.product_id = p.product_id AND c.user_ID = #{user_ID}
+	</select>
+	
+	<!-- 4. 장바구니 수량 수정 (상품 변경 불가, 상품수량만 변경 가능 / 장바구니 수량 변경처리 매핑 -> 수량 덮어쓰기) -->
+	<update id="modifyCart">
+		UPDATE tbl_cart
+		SET amount = #{amount}
+		WHERE user_ID = #{user_ID}
+		AND product_id = #{product_id}
+	</update>
+	
+	<!-- 5. 장바구니 개별 삭제 -->
+	<delete id="delete">
+		DELETE FROM tbl_cart
+		WHERE cart_id = #{cart_id}
+	</delete>
+
+	<!-- 6. 장바구니에 동일한 상품 레코드 확인 -->
+	<select id="countCart" resultType="int">
+		SELECT COUNT(*)
+		FROM tbl_cart
+		WHERE user_ID = #{user_ID}
+		AND product_id = #{product_id}
+	</select>
+
+	<!-- 7. 장바구니에 동일한 상품이 존재하면 수정 (장바구니 동일한 상품 레코드가 있으면 기존의 수량과 입력받은 수량을 합산하여 update -> 수량 합산하기) -->
+	<update id="updateCart">
+		UPDATE tbl_cart
+		SET amount = amount + #{amount}
+		WHERE user_ID = #{user_ID}
+		AND product_id = #{product_id}
+	</update>
+
+</mapper>
